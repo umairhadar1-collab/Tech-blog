@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import PostItem from '../components/PostItem.astro';
+import TagChips from '../components/TagChips.astro';
+import { getPosts, allTags, formatDate, readingMinutes } from '../lib/posts';
+
+const posts = await getPosts();
+const featured = posts.find((p) => p.data.featured) ?? posts[0];
+const rest = posts.filter((p) => p.id !== featured?.id);
+const tags = allTags(posts);
+---
+<Base title="Stack Notes">
+  <section class="hero">
+    <p class="eyebrow">A blog about AI and the web</p>
+    <h1>Real tests of AI tools, from a working web developer.</h1>
+    <p class="lede">Prompts that work, builds that broke, and what I would do differently. Every post names the tool, the model and the date.</p>
+  </section>
+
+  {featured && (
+    <section class="featured" aria-labelledby="featured-title">
+      <p class="eyebrow">Featured{featured.data.tool ? ` · ${featured.data.tool}` : ''}</p>
+      <h2 id="featured-title"><a href={`/blog/${featured.id}/`}>{featured.data.title}</a></h2>
+      <p>{featured.data.description}</p>
+      <div class="meta">
+        <span>{formatDate(featured.data.pubDate)}</span>
+        <span>{readingMinutes(featured.body)} min read</span>
+      </div>
+      <p style="margin-top:20px;margin-bottom:0"><a class="btn" href={`/blog/${featured.id}/`}>Read the post</a></p>
+    </section>
+  )}
+
+  <div class="list-head">
+    <h2>Latest posts</h2>
+  </div>
+  <TagChips tags={tags} />
+  <ol class="posts">
+    {rest.map((p) => <PostItem post={p} />)}
+  </ol>
+</Base>

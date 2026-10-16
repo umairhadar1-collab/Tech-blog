@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostItem from '../../components/PostItem.astro';
+import TagChips from '../../components/TagChips.astro';
+import { getPosts, allTags } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return allTags(posts).map((tag) => ({
+    params: { tag },
+    props: { tag, tags: allTags(posts), posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}
+const { tag, tags, posts } = Astro.props;
+---
+<Base title={`Posts tagged ${tag}`} description={`Stack Notes posts about ${tag}.`}>
+  <section class="hero" style="padding-bottom:16px">
+    <p class="eyebrow">Topic</p>
+    <h1>{tag}</h1>
+  </section>
+  <TagChips tags={tags} current={tag} />
+  <ol class="posts">
+    {posts.map((p) => <PostItem post={p} />)}
+  </ol>
+</Base>

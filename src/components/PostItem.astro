@@ -1,0 +1,15 @@
+---
+import { formatDate, type Post } from '../lib/posts';
+interface Props { post: Post }
+const { post } = Astro.props;
+---
+<li class="post">
+  <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+  <div>
+    <h3><a href={`/blog/${post.id}/`}>{post.data.title}</a></h3>
+    <p>{post.data.description}</p>
+    <div class="tags">
+      {post.data.tags.map((t) => <a class="tag" href={`/tags/${t}/`}>{t}</a>)}
+    </div>
+  </div>
+</li>
